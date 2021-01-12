@@ -22,7 +22,7 @@ function loanInput() {
 // get apr
 function aprInput() {
   // input apr
-  prompt("Please enter your Annual Percentage Rate (APR) as a decimal, like 0.05.");
+  prompt("Please enter your Annual Percentage Rate (APR) as a decimal, like 0.05. If your APR is 0, you can leave this blank.");
   let rawAPR = rlSync.question();
   let apr = Number(rawAPR.replace('%',''));
 
@@ -64,8 +64,12 @@ function monthInput() {
 
 // calculate monthly payments
 function calcPayments(loan, interest, duration) {
-  return (loan * (interest / (1 - Math.pow((1 + interest),
-    (-duration))))).toFixed(2);
+  if (interest === 0) {
+    return (loan / duration).toFixed(2);
+  } else {  // interest being 0 messes with this formula and returns NaN because division by 0
+    return (loan * (interest / (1 - Math.pow((1 + interest),
+      (-duration))))).toFixed(2);
+  }
 }
 
 // prompt to go again
