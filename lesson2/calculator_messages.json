@@ -1,0 +1,24 @@
+{
+  "english" : {
+    "welcome" : "Welcome to Calculator!",
+    "firstNum" : "What's the first number?",
+    "secondNum" : "What's the second number?",
+    "operation" : "What operation would you like to perform?\n1) Add 2) Subtract 3) Multiply 4) Divide",
+    "result" : "The result is ",
+    "again" : "Would you like to perform another calculation? 1 for Yes, 2 for No",
+    "invalidNum" : "Hmm... that doesn't look like a valid number.",
+    "invalidOp" : "Must choose 1, 2, 3 or 4",
+    "invalidAnswer" : "Please enter 1 for Yes or 2 for No."
+  },
+  "spanish": {
+    "welcome" : "Bienvenido a la Calculadora!",
+    "firstNum" : "Ingrese tu primer numero.",
+    "secondNum" : "Ingrese tu segundo numero.",
+    "operation" : "Que operación te gustaría realizar:\n1) Añadir 2) Sustraer 3) Multiplicar 4) Dividir",
+    "result" : "Tu resultado es ",
+    "again" : "Le gustaría realizar otro cálculo? 1 para Si, 2 para No",
+    "invalidNum" : "Hmm ... eso no parece un número válido.",
+    "invalidOp" : "Por favor escoge 1, 2, 3, o 4",
+    "invalidAnswer" : "Por favor ingrese 1 para Si o 2 para No."
+  }
+}
