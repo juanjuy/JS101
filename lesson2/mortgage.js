@@ -97,7 +97,6 @@ prompt("Welcome to the Mortgage Calculator! Get your monthly payment amount in 3
 // execute
 while (true) {
   calcAndDisplay();
-  let answer = repeat();
-  if (answer === "N") break;
+  if (repeat() === "N") break;
   console.clear();
 }
