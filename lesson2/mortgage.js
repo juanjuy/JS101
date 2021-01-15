@@ -1,104 +1,72 @@
 const rlSync = require('readline-sync');
 
-function prompt(str) {
-  console.log(`=> ${str}`);
+const MESSAGE = require('./mortgage_messages.json');
+
+function prompt(key) {
+  console.log(`=> ${MESSAGE[key]}`);
 }
 
-// get loan amount
-function loanInput() {
-  // input loan amount
-  prompt("Please enter your loan amount.");
-  let loanAmount = Number(rlSync.question().replace('$','').replace(/,/g,''));
-
-  // validate loan amount
-  while (isNaN(loanAmount) || loanAmount <= 0) {
-    prompt("Please enter a valid loan amount.");
-    loanAmount = Number(rlSync.question().replace('$','').replace(/,/g,''));
+function retrieveInput(inputType, invalidInput) {
+  prompt(inputType);
+  let input = rlSync.question();
+  while (invalidInput(input)) {
+    prompt(`${inputType}Error`);
+    input = rlSync.question();
   }
-
-  return loanAmount;
+  return input;
 }
 
-// get apr
-function aprInput() {
-  // input apr
-  prompt("Please enter your Annual Percentage Rate (APR) as a decimal, like 0.05. If your APR is 0, you can leave this blank.");
-  let rawAPR = rlSync.question();
-  let apr = Number(rawAPR.replace('%',''));
-
-  // validate apr
-  while (isNaN(apr) || apr < 0) {
-    prompt("Please enter a valid APR.");
-    rawAPR = rlSync.question();
-    apr = Number(rawAPR.replace('%',''));
-  }
-
-  /* if apr is at least 1, or if raw input contains a %,
-  divide apr by 100. meant to catch and fix user input errors */
-  if (apr >= 1 || rawAPR.includes('%')) {
-    apr /= 100;
-  }
-
-  return apr;
+function invalidLoan(amount) {
+  amount = Number(amount);
+  return isNaN(amount) || amount <= 0;
 }
 
-// calculate monthly interest
+function invalidAPR(amount) {
+  amount = Number(amount);
+  return isNaN(amount) || amount < 0;
+}
+
+function invalidDuration(amount) {
+  amount = Number(amount);
+  return isNaN(amount) || amount <= 0;
+}
+
 function calcMonthlyInterest(annual) {
-  return annual / 12;
+  return annual / 1200;
 }
 
-// get loan duration
-function monthInput() {
-  // input loan duration
-  prompt("Please enter your loan duration in months.");
-  let numOfMonths = Number(rlSync.question());
-
-  // validate loan duration
-  while (isNaN(numOfMonths) || numOfMonths <= 0) {
-    prompt("Please enter a valid loan duration in months.");
-    numOfMonths = Number(rlSync.question());
-  }
-
-  return numOfMonths;
-}
-
-// calculate monthly payments
 function calcPayments(loan, interest, duration) {
   if (interest === 0) {
     return (loan / duration).toFixed(2);
-  } else {  // interest being 0 messes with this formula and returns NaN because division by 0
+  } else {
     return (loan * (interest / (1 - Math.pow((1 + interest),
       (-duration))))).toFixed(2);
   }
 }
 
-// prompt to go again
 function repeat() {
-  prompt("Would you like to calculate another monthly payment? Y / N");
+  prompt("again");
   let answer = rlSync.question().toUpperCase();
 
   while (!["Y","N"].includes(answer)) {
-    prompt("Please enter Y or N.");
+    prompt("againError");
     answer = rlSync.question().toUpperCase();
   }
 
   return answer;
 }
 
-// compile all numbers and display result
 function calcAndDisplay() {
-  let loanAmount = loanInput();
-  let apr = aprInput();
+  let loanAmount = retrieveInput("loan",invalidLoan);
+  let apr = retrieveInput("percent", invalidAPR);
   let monthlyInterest = calcMonthlyInterest(apr);
-  let numOfMonths = monthInput();
+  let numOfMonths = retrieveInput("duration", invalidDuration);
   let monthlyPayment = calcPayments(loanAmount,monthlyInterest,numOfMonths);
-  prompt(`Given a loan amount of $${loanAmount} and an APR of ${apr * 100}%, your monthly payment comes out to $${monthlyPayment} for ${numOfMonths} months.`);
+  console.log(`=> Given a loan amount of $${loanAmount} and an APR of ${apr}%, your monthly payment comes out to $${monthlyPayment} for ${numOfMonths} months.`);
 }
 
-// welcome
-prompt("Welcome to the Mortgage Calculator! Get your monthly payment amount in 3 easy steps!");
+prompt("welcome");
 
-// execute
 while (true) {
   calcAndDisplay();
   if (repeat() === "N") break;

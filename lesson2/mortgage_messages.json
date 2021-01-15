@@ -1,0 +1,11 @@
+{
+  "welcome" : "Welcome to the Mortgage Calculator!",
+  "loan" : "Please enter your loan amount.",
+  "loanError" : "Please enter a valid loan amount.",
+  "percent" : "Please enter your Annual Percentage Rate (APR) without the % symbol (for example, for a 5% APR please enter 5.)",
+  "percentError" : "Please enter a valid APR.",
+  "duration" : "Please enter your loan duration in months.",
+  "durationError" : "Please enter a valid loan duration in months.",
+  "again" : "Would you like to calculate another monthly payment? Y / N",
+  "againError" : "Please enter Y or N."
+}
