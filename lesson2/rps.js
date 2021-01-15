@@ -39,15 +39,15 @@ function capitalize(str) {
 
 function getUserInput() {
   prompt('Please select Rock (r), Paper (p), Scissors (s), Lizard (l), or Spock (sp).');
-  let input = shortenedInput(readline.question().toLowerCase());
+  let input = partialMatch(readline.question().toLowerCase());
   while (invalidChoice(input)) {
     prompt('Please enter a valid choice.');
-    input = shortenedInput(readline.question().toLowerCase());
+    input = partialMatch(readline.question().toLowerCase());
   }
   return input;
 }
 
-function shortenedInput(choice) {
+function partialMatch(choice) {
   if (choice.trim().length > 0) {
     for (let index = 0; index < OPTIONS_ARRAY.length; index++) {
       if (OPTIONS_ARRAY[index].substring(0,choice.length) === choice) {
