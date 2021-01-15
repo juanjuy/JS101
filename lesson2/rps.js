@@ -88,7 +88,7 @@ function displayWinner(user, cpu) {
   }
 }
 
-function displayScores() {
+function checkAndDisplayScores() {
   if (userScore === 5) {
     prompt('You got 5 points, you win!');
     playAgain();
@@ -122,5 +122,5 @@ while (userScore < 5 && cpuScore < 5) {
   let userChoice = getUserInput();
   let cpuChoice = getCPUChoice();
   displayWinner(userChoice, cpuChoice);
-  displayScores();
+  checkAndDisplayScores();
 }
