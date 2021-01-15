@@ -89,11 +89,11 @@ function displayWinner(user, cpu) {
 }
 
 function checkAndDisplayScores() {
-  if (userScore === 5) {
-    prompt('You got 5 points, you win!');
+  if (userScore === 3) {
+    prompt('You got 3 points, you win!');
     playAgain();
-  } else if (cpuScore === 5) {
-    prompt('CPU got 5 points, you lose.');
+  } else if (cpuScore === 3) {
+    prompt('CPU got 3 points, you lose.');
     playAgain();
   } else {
     console.log(`Score\nYou: ${userScore}\nCPU: ${cpuScore}`);
@@ -116,9 +116,9 @@ function playAgain() {
   }
 }
 
-prompt('Welcome to Rock-Paper-Scissors-Lizard-Spock! First one to get 5 points wins.');
+prompt("Welcome to Rock-Paper-Scissors-Lizard-Spock! Let's play a best-of-five.");
 
-while (userScore < 5 && cpuScore < 5) {
+while (userScore < 3 && cpuScore < 3) {
   let userChoice = getUserInput();
   let cpuChoice = getCPUChoice();
   displayWinner(userChoice, cpuChoice);
