@@ -1,29 +1,31 @@
 const WINNING_COMBOS = {
   rock: {
-    beats: ["scissors", "lizard"],
-    verbs: ["smashes", "crushes"]
+    scissors: { verb: "smashes" },
+    lizard: { verb: "crushes" },
   },
   scissors: {
-    beats: ["paper", "lizard"],
-    verbs: ["cuts", "decapitates"],
+    paper: { verb: "cuts" },
+    lizard: { verb: "decapitates" },
   },
   lizard: {
-    beats: ["spock", "paper"],
-    verbs: ["poisons", "eats"]
+    spock: { verb: "poisons" },
+    paper: { verb: "eats" },
   },
   spock: {
-    beats: ["scissors", "rock"],
-    verbs: ["dismantles", "vaporizes"]
+    scissors: { verb: "dismantles" },
+    rock: { verb: "vaporizes" },
   },
   paper: {
-    beats: ["spock", "rock"],
-    verbs: ["disproves", "covers"]
+    spock: { verb: "disproves" },
+    rock: { verb: "covers" },
   }
 };
 
 const OPTIONS_ARRAY = Object.keys(WINNING_COMBOS);
 
 const readline = require('readline-sync');
+
+const WINNING_SCORE = 3;
 
 let userScore = 0;
 let cpuScore = 0;
@@ -33,7 +35,7 @@ function prompt(message) {
 }
 
 function capitalize(str) {
-  return str.substring(0,1).toUpperCase().
+  return str.charAt(0).toUpperCase().
     concat(str.substring(1,str.length));
 }
 
@@ -70,12 +72,11 @@ function getCPUChoice() {
 }
 
 function findVerb(winner, loser) {
-  let index = WINNING_COMBOS[winner].beats.indexOf(loser);
-  return WINNING_COMBOS[winner].verbs[index];
+  return WINNING_COMBOS[winner][loser]["verb"];
 }
 
 function displayWinner(user, cpu) {
-  if (WINNING_COMBOS[user].beats.includes(cpu)) {
+  if (WINNING_COMBOS[user][cpu] !== undefined) {
     let verb = findVerb(user,cpu);
     prompt(`${capitalize(user)} ${verb} ${capitalize(cpu)}, 1 point for you!`);
     userScore += 1;
@@ -89,23 +90,21 @@ function displayWinner(user, cpu) {
 }
 
 function checkAndDisplayScores() {
-  if (userScore === 3) {
+  if (userScore === WINNING_SCORE) {
     prompt('You got 3 points, you win!');
-    playAgain();
-  } else if (cpuScore === 3) {
+  } else if (cpuScore === WINNING_SCORE) {
     prompt('CPU got 3 points, you lose.');
-    playAgain();
   } else {
     console.log(`Score\nYou: ${userScore}\nCPU: ${cpuScore}`);
   }
 }
 
 function playAgain() {
-  prompt('Would you like to play again? Y / N');
+  prompt('Would you like to play again? yes / no');
   let answer = readline.question().toUpperCase();
 
-  while (!["Y","N"].includes(answer)) {
-    prompt('Please enter Y or N.');
+  while (!["Y","N", "YES", "NO"].includes(answer)) {
+    prompt('Please enter yes or no.');
     answer = readline.question().toUpperCase();
   }
 
@@ -118,9 +117,12 @@ function playAgain() {
 
 prompt("Welcome to Rock-Paper-Scissors-Lizard-Spock! Let's play a best-of-five.");
 
-while (userScore < 3 && cpuScore < 3) {
+while (userScore < WINNING_SCORE && cpuScore < WINNING_SCORE) {
   let userChoice = getUserInput();
   let cpuChoice = getCPUChoice();
   displayWinner(userChoice, cpuChoice);
   checkAndDisplayScores();
+  if (userScore === WINNING_SCORE || cpuScore === WINNING_SCORE) {
+    playAgain();
+  }
 }
