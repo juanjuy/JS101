@@ -35,8 +35,7 @@ function prompt(message) {
 }
 
 function capitalize(str) {
-  return str.charAt(0).toUpperCase().
-    concat(str.substring(1,str.length));
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function getUserInput() {
