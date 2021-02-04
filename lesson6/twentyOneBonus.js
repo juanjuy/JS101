@@ -157,7 +157,11 @@ function displayMatchWinner(scoreObj) {
 function playAgain() {
   console.log('-------------');
   prompt('Do you want to play again? (y or n)');
-  let answer = readline.question();
+  let answer = readline.question().toLowerCase();
+  while (!['y', 'n', 'yes', 'no', 'yep', 'nah'].includes(answer)) {
+    prompt('Please enter y or n.');
+    answer = readline.question().toLowerCase();
+  }
   return answer.toLowerCase()[0] === 'y';
 }
 
