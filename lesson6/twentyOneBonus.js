@@ -70,7 +70,7 @@ function busted(total) {
   return total > MAX_CARD_VALUE;
 }
 
-function detectResult(dealerCards, playerCards) {
+function compareCards(dealerCards, playerCards) {
   let playerTotal = total(playerCards);
   let dealerTotal = total(dealerCards);
 
@@ -87,8 +87,8 @@ function detectResult(dealerCards, playerCards) {
   }
 }
 
-function displayResults(dealerCards, playerCards) {
-  let result = detectResult(dealerCards, playerCards);
+function displayRoundResults(dealerCards, playerCards) {
+  let result = compareCards(dealerCards, playerCards);
 
   console.log('==============');
   prompt(`Dealer has ${hand(dealerCards)}, for a total of: ${total(dealerCards)}`);
@@ -108,7 +108,7 @@ function displayResults(dealerCards, playerCards) {
   }
 }
 
-function returnWinner(dealerTotal, playerTotal) {
+function returnRoundWinner(dealerTotal, playerTotal) {
   if (dealerTotal > MAX_CARD_VALUE) {
     return 'player';
   } else if (playerTotal > MAX_CARD_VALUE) {
@@ -122,11 +122,22 @@ function returnWinner(dealerTotal, playerTotal) {
   }
 }
 
-function displayScores(scoreObj) {
+function hitOrStay() {
+  prompt('Would you like to (h)it or (s)tay?');
+  let answer = readline.question().toLowerCase();
+  while (!['h', 's', 'hit', 'stay'].includes(answer)) {
+    prompt("Sorry, must enter 'h' or 's'.");
+    answer = readline.question().toLowerCase();
+  }
+  return answer;
+}
+
+function scoreboard(scoreObj) {
   console.log(`Scores\nPlayer:  ${scoreObj.player}\nDealer:  ${scoreObj.dealer}\nTies:    ${scoreObj.ties}`);
   if (!matchIsOver(scoreObj)) {
     prompt('Press enter to continue.');
     readline.question();
+    console.clear();
   }
 }
 
@@ -173,7 +184,11 @@ function hand(cards) {
   return cards.map(card => `${card[1]}${card[0]}`).join(' ');
 }
 
-prompt(`Welcome to Twenty-One! First player to reach ${SCORE_TO_WIN} wins!`);
+function hiddenHand(cards) {
+  return `${cards[1]}${cards[0]}`;
+}
+
+prompt(`Welcome to Twenty-One! First player to reach ${SCORE_TO_WIN} points wins!`);
 
 while (true) {
   roundNumber++;
@@ -190,20 +205,14 @@ while (true) {
   let playerTotal = total(playerCards);
   let dealerTotal = total(dealerCards);
 
-  prompt(`Dealer has ${hand(dealerCards)}, for a total of ${dealerTotal}.`);
+  prompt(`Dealer has ${hiddenHand(dealerCards[0])}`);
   prompt(`You have: ${hand(playerCards)}, for a total of ${playerTotal}.`);
 
   // player turn
   while (playerTotal < MAX_CARD_VALUE) {
-    let playerTurn;
-    while (true) {
-      prompt('Would you like to (h)it or (s)tay?');
-      playerTurn = readline.question().toLowerCase();
-      if (['h', 's', 'hit', 'stay'].includes(playerTurn)) break;
-      prompt("Sorry, must enter 'h' or 's'.");
-    }
+    let playerTurn = hitOrStay()[0];
 
-    if (playerTurn[0] === 'h') {
+    if (playerTurn === 'h') {
       playerCards.push(deck.pop());
       playerTotal = total(playerCards);
       prompt('You chose to hit!');
@@ -211,25 +220,21 @@ while (true) {
       prompt(`Your total is now: ${playerTotal}`);
     }
 
-    if (playerTurn[0] === 's' || busted(playerTotal)) break;
+    if (playerTurn === 's' || busted(playerTotal)) break;
   }
 
-  if (busted(playerTotal) || (playerTotal === 21)) {
-    displayResults(dealerCards, playerCards);
-    updateScores(scores, returnWinner(dealerTotal, playerTotal));
-    displayScores(scores);
+  if (busted(playerTotal) || (playerTotal === MAX_CARD_VALUE)) {
+    displayRoundResults(dealerCards, playerCards);
+    updateScores(scores, returnRoundWinner(dealerTotal, playerTotal));
+    scoreboard(scores);
     if (matchIsOver(scores)) {
       displayMatchWinner(scores);
       if (playAgain()) {
         scores = resetScores();
         roundNumber = 0;
         continue;
-      } else {
-        break;
-      }
-    } else {
-      continue;
-    }
+      } else break;
+    } else continue;
   } else {
     prompt(`You stayed at ${playerTotal}`);
   }
@@ -246,38 +251,31 @@ while (true) {
 
   if (busted(dealerTotal)) {
     prompt(`Dealer total is now: ${dealerTotal}`);
-    displayResults(dealerCards, playerCards);
-    updateScores(scores, returnWinner(dealerTotal, playerTotal));
-    displayScores(scores);
+    displayRoundResults(dealerCards, playerCards);
+    updateScores(scores, returnRoundWinner(dealerTotal, playerTotal));
+    scoreboard(scores);
     if (matchIsOver(scores)) {
       displayMatchWinner(scores);
       if (playAgain()) {
         scores = resetScores();
         roundNumber = 0;
         continue;
-      } else {
-        break;
-      }
-    } else {
-      continue;
-    }
+      } else break;
+    } else continue;
   } else {
     prompt(`Dealer stays at ${dealerTotal}`);
   }
 
-  displayResults(dealerCards, playerCards);
-  updateScores(scores, returnWinner(dealerTotal, playerTotal));
-  displayScores(scores);
+  displayRoundResults(dealerCards, playerCards);
+  updateScores(scores, returnRoundWinner(dealerTotal, playerTotal));
+  scoreboard(scores);
 
   if (matchIsOver(scores)) {
     displayMatchWinner(scores);
-    if (!playAgain()) {
-      break;
-    } else {
-      scores = resetScores();
-      roundNumber = 0;
-    }
-  } else {
-    continue;
+    if (!playAgain()) break;
+
+    scores = resetScores();
+    roundNumber = 0;
+    console.clear();
   }
 }
