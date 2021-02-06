@@ -191,91 +191,83 @@ function hiddenHand(cards) {
 prompt(`Welcome to Twenty-One! First player to reach ${SCORE_TO_WIN} points wins!`);
 
 while (true) {
-  roundNumber++;
-  prompt(`Round ${roundNumber} starting!`);
+  while (true) {
+    roundNumber++;
+    prompt(`Round ${roundNumber} starting!`);
 
-  let deck = initalizeDeck();
-  let playerCards = [];
-  let dealerCards = [];
+    let deck = initalizeDeck();
+    let playerCards = [];
+    let dealerCards = [];
 
-  // initial deal
-  playerCards.push(...popTwoFromDeck(deck));
-  dealerCards.push(...popTwoFromDeck(deck));
+    // initial deal
+    playerCards.push(...popTwoFromDeck(deck));
+    dealerCards.push(...popTwoFromDeck(deck));
 
-  let playerTotal = total(playerCards);
-  let dealerTotal = total(dealerCards);
+    let playerTotal = total(playerCards);
+    let dealerTotal = total(dealerCards);
 
-  prompt(`Dealer has ${hiddenHand(dealerCards[0])}`);
-  prompt(`You have: ${hand(playerCards)}, for a total of ${playerTotal}.`);
+    prompt(`Dealer has ${hiddenHand(dealerCards[0])}`);
+    prompt(`You have: ${hand(playerCards)}, for a total of ${playerTotal}.`);
 
-  // player turn
-  while (playerTotal < MAX_CARD_VALUE) {
-    let playerTurn = hitOrStay()[0];
+    // player turn
+    while (playerTotal < MAX_CARD_VALUE) {
+      let playerTurn = hitOrStay()[0];
 
-    if (playerTurn === 'h') {
-      playerCards.push(deck.pop());
-      playerTotal = total(playerCards);
-      prompt('You chose to hit!');
-      prompt(`Your cards are now: ${hand(playerCards)}`);
-      prompt(`Your total is now: ${playerTotal}`);
+      if (playerTurn === 'h') {
+        playerCards.push(deck.pop());
+        playerTotal = total(playerCards);
+        prompt('You chose to hit!');
+        prompt(`Your cards are now: ${hand(playerCards)}`);
+        prompt(`Your total is now: ${playerTotal}`);
+      }
+
+      if (playerTurn === 's' || busted(playerTotal)) break;
     }
 
-    if (playerTurn === 's' || busted(playerTotal)) break;
-  }
+    if (busted(playerTotal) || (playerTotal === MAX_CARD_VALUE)) {
+      displayRoundResults(dealerCards, playerCards);
+      updateScores(scores, returnRoundWinner(dealerTotal, playerTotal));
+      scoreboard(scores);
+      if (matchIsOver(scores)) break;
+      continue;
+    } else {
+      prompt(`You stayed at ${playerTotal}`);
+    }
 
-  if (busted(playerTotal) || (playerTotal === MAX_CARD_VALUE)) {
+    // dealer turn
+    prompt('Dealer turn...');
+
+    while (dealerTotal < DEALER_LIMIT) {
+      prompt(`Dealer hits!`);
+      dealerCards.push(deck.pop());
+      dealerTotal = total(dealerCards);
+      prompt(`Dealer's cards are now: ${hand(dealerCards)}`);
+    }
+
+    if (busted(dealerTotal)) {
+      prompt(`Dealer total is now: ${dealerTotal}`);
+      displayRoundResults(dealerCards, playerCards);
+      updateScores(scores, returnRoundWinner(dealerTotal, playerTotal));
+      scoreboard(scores);
+      if (matchIsOver(scores)) break;
+      continue;
+    } else {
+      prompt(`Dealer stays at ${dealerTotal}`);
+    }
+
     displayRoundResults(dealerCards, playerCards);
     updateScores(scores, returnRoundWinner(dealerTotal, playerTotal));
     scoreboard(scores);
-    if (matchIsOver(scores)) {
-      displayMatchWinner(scores);
-      if (playAgain()) {
-        scores = resetScores();
-        roundNumber = 0;
-        continue;
-      } else break;
-    } else continue;
-  } else {
-    prompt(`You stayed at ${playerTotal}`);
+
+    if (matchIsOver(scores)) break;
   }
 
-  // dealer turn
-  prompt('Dealer turn...');
-
-  while (dealerTotal < DEALER_LIMIT) {
-    prompt(`Dealer hits!`);
-    dealerCards.push(deck.pop());
-    dealerTotal = total(dealerCards);
-    prompt(`Dealer's cards are now: ${hand(dealerCards)}`);
-  }
-
-  if (busted(dealerTotal)) {
-    prompt(`Dealer total is now: ${dealerTotal}`);
-    displayRoundResults(dealerCards, playerCards);
-    updateScores(scores, returnRoundWinner(dealerTotal, playerTotal));
-    scoreboard(scores);
-    if (matchIsOver(scores)) {
-      displayMatchWinner(scores);
-      if (playAgain()) {
-        scores = resetScores();
-        roundNumber = 0;
-        continue;
-      } else break;
-    } else continue;
-  } else {
-    prompt(`Dealer stays at ${dealerTotal}`);
-  }
-
-  displayRoundResults(dealerCards, playerCards);
-  updateScores(scores, returnRoundWinner(dealerTotal, playerTotal));
-  scoreboard(scores);
-
-  if (matchIsOver(scores)) {
-    displayMatchWinner(scores);
-    if (!playAgain()) break;
-
+  displayMatchWinner(scores);
+  if (playAgain()) {
     scores = resetScores();
     roundNumber = 0;
     console.clear();
+  } else {
+    break;
   }
 }
